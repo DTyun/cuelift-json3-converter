@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1d30">
+  <meta name="description" content="Convert YouTube JSON3 caption files to SRT or WebVTT in your browser. Paste or open a file, preview timed cues, and download subtitles without uploading your data.">
+  <link rel="canonical" href="https://dtyun.github.io/cuelift-json3-converter/">
+  <title>JSON3 to SRT Converter — CueLift</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./converter.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="CueLift home"><span class="brand-mark">⌁</span> CueLift</a>
+      <span class="top-note">LOCAL SUBTITLE TOOL</span>
+    </header>
+
+    <main>
+      <div class="intro">
+        <div class="eyebrow"><span class="eyebrow-line"></span> JSON3 → SRT / VTT</div>
+        <h1>YouTube JSON3 to <em>subtitles.</em></h1>
+        <p>Open a JSON3 caption file or paste its contents. Review the cues, then download an SRT or WebVTT file. Your captions stay in this browser.</p>
+      </div>
+
+      <section class="workspace" aria-label="Subtitle converter">
+        <div class="panel input-panel">
+          <div class="panel-heading"><div><span class="step">01 / INPUT</span><h2>JSON3 captions</h2></div><button id="sample-button" class="text-button" type="button">Try sample</button></div>
+          <label id="drop-zone" class="drop-zone" for="file-input">
+            <span class="drop-icon" aria-hidden="true">↥</span>
+            <strong>Choose a .json or .json3 file</strong>
+            <span>or drop it here · up to 10 MB</span>
+          </label>
+          <input id="file-input" type="file" accept=".json,.json3,application/json" class="visually-hidden">
+          <div class="field-heading"><label for="input-text">Or paste JSON3</label><button id="clear-button" class="text-button" type="button">Clear</button></div>
+          <textarea id="input-text" spellcheck="false" placeholder='{"events":[{"tStartMs":1000,"dDurationMs":2500,"segs":[{"utf8":"Hello world"}]}]}'></textarea>
+          <div id="input-error" class="error" role="alert" hidden></div>
+        </div>
+
+        <div class="panel output-panel">
+          <div class="panel-heading"><div><span class="step">02 / OUTPUT</span><h2>Ready to export</h2></div><span id="cue-count" class="count">0 CUES</span></div>
+          <div class="format-row" role="group" aria-label="Output format">
+            <button id="format-srt" type="button" class="format-button active" aria-pressed="true">SRT <span>Most video editors</span></button>
+            <button id="format-vtt" type="button" class="format-button" aria-pressed="false">VTT <span>Web players</span></button>
+          </div>
+          <div class="preview-head"><span>PREVIEW</span><span id="preview-status">Waiting for captions</span></div>
+          <pre id="output-preview" class="preview" aria-live="polite">Your subtitle preview will appear here.</pre>
+          <div class="actions"><button id="download-button" type="button" class="primary-button" disabled>Download .srt <span aria-hidden="true">↗</span></button><button id="copy-button" type="button" class="secondary-button" disabled>Copy text</button></div>
+          <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="details" aria-label="How the conversion works">
+        <div><span class="detail-label">WHAT IT READS</span><h2>Timed text, not video.</h2><p>JSON3 stores captions in an <code>events</code> array. CueLift reads each event’s start time, duration, and text segments to make standard subtitle cues. Timing-only events are skipped.</p></div>
+        <div><span class="detail-label">BEFORE YOU IMPORT</span><h2>Check the timing.</h2><p>Automatic captions can include repeated fragments or unusual timing. Review the preview and your final video before publishing. This tool converts a JSON3 file you already have; it does not download captions from YouTube.</p></div>
+      </section>
+
+      <section class="format-guide" aria-label="JSON3 conversion example">
+        <div class="guide-heading"><span class="detail-label">FORMAT GUIDE</span><h2>What changes in the file?</h2><p>JSON3 stores time in milliseconds. SRT writes start and end times as <code>HH:MM:SS,mmm</code>; VTT uses a period instead of a comma and starts with <code>WEBVTT</code>. The text stays in its original language.</p></div>
+        <div class="example-grid">
+          <div><span class="example-label">JSON3 INPUT</span><pre>{"events":[{
+  "tStartMs":1000,
+  "dDurationMs":2500,
+  "segs":[{"utf8":"Hello world"}]
+}]}</pre></div>
+          <div><span class="example-label">SRT OUTPUT</span><pre>1
+00:00:01,000 --&gt; 00:00:03,500
+Hello world</pre></div>
+        </div>
+        <p class="guide-note">Already downloading captions with yt-dlp? Its <a href="https://github.com/yt-dlp/yt-dlp/blob/master/README.md#subtitle-options" rel="noopener noreferrer">subtitle options</a> can request a subtitle format or convert one during download. CueLift is for JSON3 files you already have.</p>
+      </section>
+
+      <section class="faq" aria-label="Frequently asked questions">
+        <h2>Quick answers</h2>
+        <details><summary>What is a JSON3 file?</summary><p>JSON3 is a timed caption format used by YouTube. A usable file contains an <code>events</code> array with timed text segments.</p></details>
+        <details><summary>Are my captions uploaded?</summary><p>No. File reading and conversion happen in your browser. This site does not send caption contents to a server.</p></details>
+        <details><summary>Why are some events missing?</summary><p>JSON3 can contain timing markers with no visible text. CueLift skips those markers. It also skips invalid or empty cues.</p></details>
+        <details><summary>Does SRT keep word-level timing or styling?</summary><p>No. SRT has one time range and plain text for each cue. JSON3 word offsets and styling are not carried into the download.</p></details>
+      </section>
+    </main>
+
+    <footer><span>CueLift · Free browser tool</span><span>Independent tool · Not affiliated with YouTube</span></footer>
+  </div>
+</body>
+</html>
