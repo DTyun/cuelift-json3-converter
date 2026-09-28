@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dtyun.github.io/cuelift-json3-converter/sitemap.xml
